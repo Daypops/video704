@@ -1,0 +1,149 @@
+<!-- modifier.html -->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modifier le Film</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+            text-align: center;
+        }
+
+        header {
+            background-color: #333;
+            padding: 20px;
+            color: white;
+        }
+
+        h1 {
+            margin: 0;
+        }
+
+        form {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            margin-top: 10px;
+            display: block;
+            font-weight: bold;
+        }
+
+        input, textarea {
+            margin-bottom: 15px;
+            padding: 8px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #333;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+    
+<body>
+    <header>
+        <h1>Modifier le Film</h1>
+    </header>
+
+    <form id="movieForm">
+        <div id="movie-details"></div>
+
+        <label for="newTitle">Nouveau Titre:</label>
+        <input type="text" id="newTitle" name="newTitle" required>
+
+        <label for="newDirector">Nouveau Réalisateur:</label>
+        <input type="text" id="newDirector" name="newDirector" required>
+
+        <label for="newRating">Nouvel Avis:</label>
+        <textarea id="newRating" name="newRating" required></textarea>
+
+        <button type="button" onclick="updateMovie()">Enregistrer les modifications</button>
+    </form>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const titre = window.location.pathname.split('/').pop();
+            loadMovieDetails(titre);
+        });
+
+        function loadMovieDetails(titre) {
+            fetch('/get_movie/' + encodeURIComponent(titre))
+                .then(response => response.json())
+                .then(movie => {
+                    const movieDetails = document.getElementById('movie-details');
+                    movieDetails.innerHTML = '';
+
+                    const titleElement = document.createElement('div');
+                    titleElement.classList.add('movie-title');
+                    titleElement.textContent = 'Titre: ' + movie.title;
+
+                    const directorElement = document.createElement('div');
+                    directorElement.classList.add('movie-director');
+                    directorElement.textContent = 'Réalisateur: ' + movie.director;
+
+                    const ratingElement = document.createElement('div');
+                    ratingElement.classList.add('movie-rating');
+                    ratingElement.textContent = 'Avis: ' + movie.rating;
+
+                    movieDetails.appendChild(titleElement);
+                    movieDetails.appendChild(directorElement);
+                    movieDetails.appendChild(ratingElement);
+
+                    // Remplir les champs du formulaire avec les données du film
+                    document.getElementById('newTitle').value = movie.title;
+                    document.getElementById('newDirector').value = movie.director;
+                    document.getElementById('newRating').value = movie.rating;
+                })
+                .catch((error) => {
+                    console.error('Erreur lors du chargement des détails du film :', error);
+                });
+        }
+
+        function updateMovie() {
+            const titre = window.location.pathname.split('/').pop();
+            const newTitle = document.getElementById('newTitle').value;
+            const newDirector = document.getElementById('newDirector').value;
+            const newRating = document.getElementById('newRating').value;
+
+            const updatedMovieData = {
+                title: newTitle,
+                director: newDirector,
+                rating: newRating
+            };
+
+            fetch('/update_movie/' + encodeURIComponent(titre), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(updatedMovieData),
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('Film mis à jour avec succès !');
+                window.location.href = '/accueil';
+            })
+            .catch((error) => {
+                console.error('Erreur lors de la mise à jour du film :', error);
+            });
+        }
+    </script>
+</body>
+</html>

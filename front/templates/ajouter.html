@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vidéothèque</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 50px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        label {
+            margin-top: 10px;
+        }
+
+        input, textarea {
+            margin-bottom: 15px;
+            padding: 8px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #333;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Ajouter un film</h1>
+        <form id="movieForm">
+            <label for="title">Titre du film:</label>
+            <input type="text" id="title" name="title" required>
+
+            <label for="director">Réalisateur:</label>
+            <input type="text" id="director" name="director" required>
+
+            <label for="rating">Avis:</label>
+            <textarea id="rating" name="rating" required></textarea>
+
+            <button type="button" onclick="addMovie()">Ajouter le film</button>
+        </form>
+    </div>
+
+    <div id="buttons">
+        <a href="/accueil">
+            <button type="button">Retour a l'accueil</button>
+        </a>
+    </div>
+
+    <script>
+        function addMovie() {
+            const title = document.getElementById('title').value;
+            const director = document.getElementById('director').value;
+            const rating = document.getElementById('rating').value;
+
+            const movieData = {
+                title: title,
+                director: director,
+                rating: rating
+            };
+
+            // Envoi des données à l'API Flask
+            fetch('/add_movie', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(movieData),
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('Film ajouté avec succès !');
+            })
+            .catch((error) => {
+                console.error('Erreur lors de l\'ajout du film :', error);
+            });
+        }
+    </script>
+</body>
+</html>

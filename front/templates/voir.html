@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ma Vidéothèque</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+            text-align: center;
+        }
+
+        header {
+            background-color: #333;
+            padding: 10px;
+            color: white;
+        }
+
+        #movies-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: flex-start;
+            margin: 20px;
+        }
+
+        .movie-card {
+            width: 300px;
+            margin: 20px;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+            transition: transform 0.2s;
+            cursor: pointer;
+        }
+
+        .movie-card:hover {
+            transform: scale(1.05);
+        }
+
+        .movie-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .movie-director {
+            margin-bottom: 10px;
+        }
+
+        .movie-rating {
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Ma Vidéothèque</h1>
+    </header>
+
+    <div id="movies-container"></div>
+    <div id="buttons">
+        <a href="/accueil">
+            <button type="button">Retour a l'accueil</button>
+        </a>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Appel de la fonction loadData une fois que le DOM est chargé
+            loadData();
+        });
+
+        function loadData() {
+            fetch('/get_movies')
+                .then(response => response.text())  // Utilisez response.text() pour récupérer la chaîne de caractères
+                .then(data => {
+                    // Convertissez la chaîne JSON en objet JavaScript
+                    const parsedData = JSON.parse(data);
+
+                    const moviesContainer = document.getElementById('movies-container');
+                    moviesContainer.innerHTML = '';
+
+                    parsedData.forEach(movie => {
+                        const movieCard = document.createElement('a');  // Utilisez une balise de lien (<a>) pour rendre le contenu cliquable
+                        movieCard.classList.add('movie-card');
+                        movieCard.href = '/modifier/' + encodeURIComponent(movie.title);  // Ajoutez le lien avec le titre encodé
+
+                        const titleElement = document.createElement('div');
+                        titleElement.classList.add('movie-title');
+                        titleElement.textContent = movie.title;
+
+                        const directorElement = document.createElement('div');
+                        directorElement.classList.add('movie-director');
+                        directorElement.textContent = 'Réalisateur: ' + movie.director;
+
+                        const ratingElement = document.createElement('div');
+                        ratingElement.classList.add('movie-rating');
+                        ratingElement.textContent = 'Avis: ' + movie.rating;
+
+                        movieCard.appendChild(titleElement);
+                        movieCard.appendChild(directorElement);
+                        movieCard.appendChild(ratingElement);
+
+                        moviesContainer.appendChild(movieCard);
+                    });
+                })
+                .catch((error) => {
+                    console.error('Erreur lors du chargement des données :', error);
+                });
+        }
+    </script>
+</body>
+</html>

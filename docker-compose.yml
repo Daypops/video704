@@ -1,0 +1,25 @@
+version: "3"
+
+services:
+
+  front:
+    container_name: "front"
+    build:
+      context: ./front
+    ports:
+      - "80:80"
+    networks:
+      - video
+
+  api:
+    container_name: "api"
+    build:
+      context: ./api
+    ports:
+      - "5000:5000"
+    networks:
+      - video
+
+networks:
+  video:
+    driver: bridge
